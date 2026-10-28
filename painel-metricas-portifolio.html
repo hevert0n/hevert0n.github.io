@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study: Painel de Engenharia & Qualidade de QA | Heverton</title>
+<meta name="description" content="Estudo de caso do desenvolvimento do Painel de Métricas de QA: arquitetura serverless com Google Apps Script, Google Sheets, Bootstrap 5 e Chart.js.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #050811;
+    --bg-surface: rgba(10, 18, 36, 0.72);
+    --bg-surface-hover: rgba(15, 27, 54, 0.88);
+    --border-glass: rgba(0, 255, 255, 0.16);
+    --border-glass-hover: rgba(0, 255, 255, 0.45);
+    
+    --cyan: #00ffff;
+    --cyan-dim: #00bfbf;
+    --cyan-glow: rgba(0, 255, 255, 0.35);
+    --cyan-subtle: rgba(0, 255, 255, 0.08);
+    
+    --text-main: #f0f7ff;
+    --text-muted: #8ea3bf;
+    --text-dim: #556c8a;
+    
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  
+  body {
+    margin: 0;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Grid futurista no fundo */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+      linear-gradient(to right, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .orb-1 {
+    position: fixed;
+    top: -120px;
+    left: 10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.12) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(40px);
+  }
+  .orb-2 {
+    position: fixed;
+    top: 40%;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(14, 116, 224, 0.14) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(50px);
+  }
+
+  ::selection { background: var(--cyan); color: #050811; }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Breadcrumb & Navigation */
+  .nav-bar {
+    padding: 30px 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    transition: transform 0.2s ease;
+  }
+  .back-link:hover { transform: translateX(-4px); }
+
+  /* Status Pill */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(0, 255, 255, 0.06);
+    border: 1px solid rgba(0, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    color: var(--cyan);
+    margin-bottom: 20px;
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px 2px var(--cyan);
+  }
+
+  /* Header Hero */
+  header.project-hero {
+    padding: 40px 0 50px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+  }
+  h1 .glow {
+    color: var(--cyan);
+    text-shadow: 0 0 25px rgba(0, 255, 255, 0.45);
+  }
+  .project-subtitle {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    max-width: 68ch;
+  }
+
+  /* Hero Actions */
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    background: var(--cyan);
+    color: #050811;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 24px rgba(0, 255, 255, 0.45);
+  }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-main);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+  .btn-secondary:hover {
+    border-color: var(--cyan);
+    background: rgba(0, 255, 255, 0.08);
+    color: var(--cyan);
+  }
+
+  /* Mockup Frame & Screenshots */
+  .mockup-container {
+    margin: 36px 0 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 255, 255, 0.08);
+    transition: border-color 0.3s ease;
+  }
+  .mockup-container:hover {
+    border-color: var(--border-glass-hover);
+  }
+  .mockup-header {
+    background: rgba(5, 8, 17, 0.95);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-glass);
+  }
+  .mockup-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+  .mockup-url {
+    margin-left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 12px;
+    border-radius: 4px;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mockup-image {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    background: #0d1322;
+  }
+  .mockup-caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 8px 16px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  /* Seções */
+  section {
+    padding: 52px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+
+  /* Metrics Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0 10px;
+  }
+  .metric-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    backdrop-filter: blur(12px);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .metric-card:hover {
+    border-color: var(--border-glass-hover);
+    transform: translateY(-2px);
+  }
+  .metric-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-shadow: 0 0 18px rgba(0, 255, 255, 0.35);
+    margin-bottom: 2px;
+  }
+  .metric-label {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* Tabela de Métricas Customizada (Glass) */
+  .tech-table-container {
+    overflow-x: auto;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    margin: 24px 0;
+    background: var(--bg-surface);
+    backdrop-filter: blur(10px);
+  }
+  .tech-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    text-align: left;
+  }
+  .tech-table th {
+    background: rgba(0, 255, 255, 0.05);
+    color: var(--cyan);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-glass);
+  }
+  .tech-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  .tech-table tr:last-child td { border-bottom: none; }
+  .tech-table strong { color: #fff; }
+  .tech-formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--cyan);
+    background: rgba(0, 255, 255, 0.06);
+    padding: 3px 6px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  /* Tactics Box / Arquitetura */
+  .tactics-box {
+    background: linear-gradient(145deg, rgba(10, 18, 36, 0.8), rgba(6, 12, 24, 0.95));
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 24px 28px;
+    position: relative;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+  .tactics-box::before {
+    content: "ARCHITECTURE_SPECS";
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(0, 255, 255, 0.2);
+  }
+  .tactics-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+  }
+  .tactics-list li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+    font-size: 14.5px;
+    color: var(--text-main);
+  }
+  .tactics-list li:last-child { margin-bottom: 0; }
+  .tactics-list li::before {
+    content: "▹";
+    position: absolute;
+    left: 0;
+    color: var(--cyan);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+  }
+
+  /* Tags de Habilidades */
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+  }
+  .tag-featured {
+    border-color: rgba(0, 255, 255, 0.3);
+    color: var(--cyan);
+    background: rgba(0, 255, 255, 0.04);
+  }
+
+  /* Contact Footer Box */
+  footer { padding: 50px 0 60px; }
+  .contact-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    margin-bottom: 30px;
+  }
+  .contact-box h3 { font-size: 22px; margin: 0 0 10px; color: #fff; }
+  .contact-box p { color: var(--text-muted); font-size: 14px; max-width: 50ch; margin: 0 auto 20px; }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  @media (max-width: 720px) {
+    .metrics-grid { grid-template-columns: 1fr; }
+    .tactics-box::before { display: none; }
+    .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb-1"></div>
+<div class="orb-2"></div>
+
+<div class="wrap">
+
+  <!-- NAVEGAÇÃO -->
+  <nav class="nav-bar">
+    <a href="index.html" class="back-link">← VOLTAR AO PORTFÓLIO</a>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim);">CASE 01</span>
+  </nav>
+
+  <!-- HERO DO PROJETO -->
+  <header class="project-hero">
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      PROJETO EM PRODUÇÃO · OPEN SOURCE
+    </div>
+
+    <h1>Painel de Engenharia & <span class="glow">Métricas de QA</span></h1>
+    <p class="project-subtitle">
+      Ecossistema serverless para governança de testes de software, monitoramento de estabilidade pós-deploy, prevenção de defeitos e emissão automatizada de laudos técnicos em PDF.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn-primary" href="https://github.com/hevert0n/painel-metricas-qa" target="_blank" rel="noopener">
+        <span>⚡ VER NO GITHUB</span>
+      </a>
+      <a class="btn-secondary" href="https://github.com/hevert0n/painel-metricas-qa/blob/PDI-QA/Guia%20Construcao%20Painel%20QA.pdf" target="_blank" rel="noopener">
+        <span>📄 GUIA DE IMPLEMENTAÇÃO (PDF) ↗</span>
+      </a>
+    </div>
+
+    <!-- MOCKUP PRINCIPAL DO DASHBOARD -->
+    <div class="mockup-container">
+      <div class="mockup-header">
+        <span class="mockup-dot dot-red"></span>
+        <span class="mockup-dot dot-yellow"></span>
+        <span class="mockup-dot dot-green"></span>
+        <span class="mockup-url">https://script.google.com/macros/s/.../exec?view=dashboard</span>
+      </div>
+      <!-- Substitua 'painel-screenshot.png' pelo arquivo da print real no seu repositório -->
+      <img class="mockup-image" src="https://raw.githubusercontent.com/hevert0n/painel-metricas-qa/PDI-QA/painel-screenshot.png" alt="Visão Geral do Painel de Métricas de QA">
+      <div class="mockup-caption">Figura 1: Dashboard com 9 cards consolidados, gráficos de evolução e listagem dinâmica por módulo.</div>
+    </div>
+
+    <!-- CARDS DE DESTAQUE TÉCNICO -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-number">9 Cards</div>
+        <div class="metric-label">Indicadores síncronos de engenharia e esforço</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-number">Zero Custo</div>
+        <div class="metric-label">Hospedagem serverless na nuvem Google</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-number">1-Click PDF</div>
+        <div class="metric-label">Geração de laudos executivos A4 Retrato</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- O PROBLEMA E O OBJETIVO -->
+  <section id="contexto">
+    <div class="section-tag">▸ CONTEXTO & MOTIVAÇÃO</div>
+    <h2 class="section-title">O Desafio de Negócio</h2>
+    
+    <p style="font-size: 15px; color: var(--text-main); margin-bottom: 16px;">
+      Em muitas equipes de engenharia, os dados de qualidade ficam dispersos em planilhas sem inteligência de negócio ou restritos a ferramentas de gestão que não oferecem visibilidade executiva. Decisões como adiamento de releases ou contenção de bugs eram frequentemente tratadas com subjetividade.
+    </p>
+    <p style="font-size: 14.5px; color: var(--text-muted);">
+      O objetivo foi estruturar um painel centralizado que fizesse a ponte entre o <strong>esforço operacional de testes</strong> e a <strong>tomada de decisão técnica</strong>, dando visibilidade em tempo real para desenvolvedores, líderes de QA e gestores.
+    </p>
+
+    <div class="tactics-box">
+      <h3 style="margin: 0; font-size: 14px; color: var(--cyan); font-family: 'JetBrains Mono', monospace;">
+        METAS ESTRATÉGICAS ALCANÇADAS
+      </h3>
+      <ul class="tactics-list">
+        <li><strong>Substituição de opiniões por dados:</strong> Justificativa de Go/No-Go com base na Taxa de Escape e no histórico de estabilidade;</li>
+        <li><strong>Equilíbrio de suíte:</strong> Identificação precoce de rotinas instáveis pelo cruzamento de Efetividade e Meta de Cobertura;</li>
+        <li><strong>Segurança e governança:</strong> Isolamento entre visão executiva de leitura e visão restrita de escrita via token criptográfico.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ARQUITETURA E ENGENHARIA -->
+  <section id="arquitetura">
+    <div class="section-tag">▸ ARQUITETURA TÉCNICA</div>
+    <h2 class="section-title">Engenharia da Solução</h2>
+
+    <p style="font-size: 14.5px; color: var(--text-muted); margin-bottom: 20px;">
+      A solução adota uma arquitetura em três camadas desacopladas, sem dependência de servidores dedicados ou licenças corporativas onerosas:
+    </p>
+
+    <div class="tactics-box">
+      <ul class="tactics-list">
+        <li><strong>Camada de Persistência (Google Sheets API):</strong> Banco relacional leve com 19 colunas mapeadas de A até S, armazenando todo o ciclo de vida da feature.</li>
+        <li><strong>Camada Servidora (Google Apps Script - Engine V8):</strong> Backend responsável por sanitização de payloads, cálculo automático de MTTF, apuração de scores e validação do token admin.</li>
+        <li><strong>Camada de Apresentação (HTML5, Bootstrap 5 & Chart.js):</strong> Frontend interativo com filtros reativos por período/módulo, gráficos em rosca e timeline, além de tooltips nativos com o dicionário de métricas.</li>
+      </ul>
+    </div>
+
+    <!-- MOCKUP DO RELATÓRIO PDF -->
+    <div class="mockup-container" style="max-width: 650px; margin: 30px auto 10px;">
+      <div class="mockup-header">
+        <span class="mockup-dot dot-red"></span>
+        <span class="mockup-dot dot-yellow"></span>
+        <span class="mockup-dot dot-green"></span>
+        <span class="mockup-url">relatorio-qualidade-feature.pdf (A4 Portrait)</span>
+      </div>
+      <!-- Print/Ilustração do Laudo -->
+      <img class="mockup-image" src="https://raw.githubusercontent.com/hevert0n/painel-metricas-qa/PDI-QA/laudo-screenshot.png" alt="Relatório Técnico em PDF de Página Única">
+      <div class="mockup-caption">Figura 2: Laudo técnico de homologação otimizado via CSS @media print para 1 folha A4.</div>
+    </div>
+  </section>
+
+  <!-- DICIONÁRIO DE MÉTRICAS -->
+  <section id="metricas">
+    <div class="section-tag">▸ FORMULAÇÃO MATEMÁTICA</div>
+    <h2 class="section-title">Métricas de Qualidade Aplicadas</h2>
+
+    <div class="tech-table-container">
+      <table class="tech-table">
+        <thead>
+          <tr>
+            <th>MÉTRICA</th>
+            <th>CONCEITO & DECISÃO</th>
+            <th>FÓRMULA / REGRA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Score de Qualidade</strong></td>
+            <td>Avalia a contenção do time de QA. Falhas internas geram retrabalho, mas apenas escapes para produção penalizam a nota.</td>
+            <td><span class="tech-formula">(1 - (Bugs Prod / Bugs QA)) * 100</span></td>
+          </tr>
+          <tr>
+            <td><strong>Taxa de Escape</strong></td>
+            <td>Percentual de defeitos que vazaram para os clientes finais em relação a todas as anomalias mapeadas no ciclo.</td>
+            <td><span class="tech-formula">(Bugs Prod / Total Bugs) * 100</span></td>
+          </tr>
+          <tr>
+            <td><strong>Meta de Cobertura</strong></td>
+            <td>Estimativa de cenários de teste necessários para homologar a complexidade funcional especificada.</td>
+            <td><span class="tech-formula">Requisitos Funcionais * 3</span></td>
+          </tr>
+          <tr>
+            <td><strong>Efetividade</strong></td>
+            <td>Densidade de defeitos capturados pela suíte. Baliza a maturidade do código recebido versus a cobertura aplicada.</td>
+            <td><span class="tech-formula">(Bugs QA / Casos Executados) * 100</span></td>
+          </tr>
+          <tr>
+            <td><strong>MTTF</strong></td>
+            <td><em>Mean Time to Failure</em>. Tempo decorrido de estabilidade contínua entre o deploy e o primeiro bug em produção.</td>
+            <td><span class="tech-formula">Data Bug Prod - Data Deploy</span></td>
+          </tr>
+          <tr>
+            <td><strong>TMT Médio</strong></td>
+            <td>Tempo Médio de Testes. Média de esforço dedicado por ciclo de entrega para alimentar estimativas futuras de sprints.</td>
+            <td><span class="tech-formula">Σ(TTF) / Qtd de Features</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- STACK & TECNOLOGIAS -->
+  <section id="stack">
+    <div class="section-tag">▸ STACK TECNOLÓGICA</div>
+    <h2 class="section-title">Recursos & Tecnologias Utilizadas</h2>
+
+    <div class="tags">
+      <span class="tag tag-featured">Google Apps Script</span>
+      <span class="tag tag-featured">JavaScript ES6+</span>
+      <span class="tag tag-featured">Bootstrap 5</span>
+      <span class="tag tag-featured">Chart.js</span>
+      <span class="tag">Google Sheets API</span>
+      <span class="tag">CSS Media Queries (@print)</span>
+      <span class="tag">Engenharia de Confiabilidade</span>
+      <span class="tag">Git & GitHub</span>
+    </div>
+  </section>
+
+  <!-- RODAPÉ & CONTATO -->
+  <footer id="contact">
+    <div class="contact-box">
+      <div class="section-tag" style="margin-bottom: 8px;">▸ CÓDIGO FONTE & REPOSITÓRIO</div>
+      <h3>Interessado em implementar essa solução?</h3>
+      <p>O projeto é de código aberto e conta com documentação completa e passo a passo em PDF para montagem do zero.</p>
+      
+      <div class="hero-actions" style="justify-content: center;">
+        <a class="btn-primary" href="https://github.com/hevert0n/painel-metricas-qa" target="_blank" rel="noopener">
+          Repositório no GitHub ↗
+        </a>
+        <a class="btn-secondary" href="index.html">
+          ← Voltar para a Home
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© Heverton · QA Engineer & Quality Specialist</div>
+      <div>Case Study · Painel de Métricas de QA</div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
