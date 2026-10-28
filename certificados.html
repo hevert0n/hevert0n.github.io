@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificações & Qualificações | Heverton - QA Engineer</title>
+<meta name="description" content="Trilha de certificações, especializações e cursos concluídos por Heverton em Engenharia de QA, Automação de Testes, Cypress e Metodologias Ágeis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #050811;
+    --bg-surface: rgba(10, 18, 36, 0.72);
+    --bg-surface-hover: rgba(15, 27, 54, 0.88);
+    --border-glass: rgba(0, 255, 255, 0.16);
+    --border-glass-hover: rgba(0, 255, 255, 0.45);
+    
+    --cyan: #00ffff;
+    --cyan-dim: #00bfbf;
+    --cyan-glow: rgba(0, 255, 255, 0.35);
+    --cyan-subtle: rgba(0, 255, 255, 0.08);
+    
+    --text-main: #f0f7ff;
+    --text-muted: #8ea3bf;
+    --text-dim: #556c8a;
+    
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  
+  body {
+    margin: 0;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+      linear-gradient(to right, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .orb-1 {
+    position: fixed;
+    top: -120px;
+    left: 10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.12) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(40px);
+  }
+  .orb-2 {
+    position: fixed;
+    top: 40%;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(14, 116, 224, 0.14) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(50px);
+  }
+
+  ::selection { background: var(--cyan); color: #050811; }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-bar {
+    padding: 30px 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    transition: transform 0.2s ease;
+  }
+  .back-link:hover { transform: translateX(-4px); }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(0, 255, 255, 0.06);
+    border: 1px solid rgba(0, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    color: var(--cyan);
+    margin-bottom: 20px;
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px 2px var(--cyan);
+  }
+
+  header.cert-hero {
+    padding: 40px 0 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+  }
+  h1 .glow {
+    color: var(--cyan);
+    text-shadow: 0 0 25px rgba(0, 255, 255, 0.45);
+  }
+  .cert-subtitle {
+    font-size: 15.5px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    max-width: 68ch;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0 10px;
+  }
+  .metric-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    backdrop-filter: blur(12px);
+  }
+  .metric-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 2px;
+  }
+  .metric-label { font-size: 12px; color: var(--text-muted); }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 32px 0 20px;
+  }
+  .filter-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--cyan);
+    color: #fff;
+    background: rgba(0, 255, 255, 0.08);
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+  }
+
+  .cert-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 50px;
+  }
+  .cert-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+    backdrop-filter: blur(12px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cert-card:hover {
+    border-color: var(--border-glass-hover);
+    background: var(--bg-surface-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(0, 255, 255, 0.1);
+  }
+
+  .cert-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .cert-issuer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    text-transform: uppercase;
+  }
+  .cert-hours {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(0, 255, 255, 0.06);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    color: var(--cyan);
+  }
+  .cert-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+  .cert-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .cert-meta span { display: inline-flex; align-items: center; gap: 4px; }
+  .cert-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    word-break: break-all;
+  }
+
+  .cert-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .btn-cert {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--cyan);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.2s ease;
+  }
+  .btn-cert:hover { transform: translateX(3px); color: #fff; }
+
+  footer { padding: 40px 0 60px; }
+  .contact-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    text-align: center;
+  }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  @media (max-width: 680px) {
+    .metrics-grid { grid-template-columns: 1fr; }
+    .cert-top { flex-direction: column; gap: 6px; }
+    .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb-1"></div>
+<div class="orb-2"></div>
+
+<div class="wrap">
+
+  <!-- NAVEGAÇÃO -->
+  <nav class="nav-bar">
+    <a href="index.html" class="back-link">← VOLTAR AO PORTFÓLIO</a>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim);">ACADEMIC // TRACK</span>
+  </nav>
+
+  <!-- HERO -->
+  <header class="cert-hero">
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      FORMAÇÃO CONTINUADA & ESPECIALIZAÇÕES
+    </div>
+    <h1>Trilha de <span class="glow">Certificações</span></h1>
+    <p class="cert-subtitle">
+      Qualificações técnicas, cursos e treinamentos práticos em automação de testes, engenharia de qualidade de software, fundamentos lógicos e ferramentas corporativas.
+    </p>
+
+    <!-- METRICS CONSOLIDADAS (9 Certificados, 31h totais) -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-number">9</div>
+        <div class="metric-label">Certificações Concluídas</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-number">31h</div>
+        <div class="metric-label">Carga Horária de Especialização</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-number">100%</div>
+        <div class="metric-label">Validação Digital Autenticável</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FILTROS -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filtrar('all')">Todos</button>
+    <button class="filter-btn" onclick="filtrar('automacao')">Automação & Código</button>
+    <button class="filter-btn" onclick="filtrar('qa-fundamentals')">Fundamentos de QA</button>
+    <button class="filter-btn" onclick="filtrar('agil')">Ágil & Ferramentas</button>
+  </div>
+
+  <!-- LISTA DE CERTIFICADOS -->
+  <main class="cert-grid">
+
+    <!-- 01: Cypress E2E (Udemy) -->
+    <article class="cert-card" data-category="automacao">
+      <div class="cert-top">
+        <span class="cert-issuer">Udemy // Qualiters Club</span>
+        <span class="cert-hours">10 Horas</span>
+      </div>
+      <h3 class="cert-title">Automação Web do Zero: Do Cypress Studio ao PageObjects</h3>
+      <div class="cert-meta">
+        <span>📅 28 de Março de 2025</span>
+        <span>👨‍🏫 Qualiters Club</span>
+      </div>
+      <div class="cert-code">Código: UC-42854851-2088-463d-b898-55f87d72c440</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://ude.my/UC-42854851-2088-463d-b898-55f87d72c440" target="_blank" rel="noopener">
+          Verificar Credencial Udemy ↗
+        </a>
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/UC-42854851-2088-463d-b898-55f87d72c440.pdf" target="_blank" rel="noopener">
+          Visualizar PDF ↗
+        </a>
+      </div>
+    </article>
+
+    <!-- 02: Testes Automáticos + Curso Completo de Teste de Software (Udemy - Gustavo Farias) -->
+    <article class="cert-card" data-category="automacao">
+      <div class="cert-top">
+        <span class="cert-issuer">Udemy // Gustavo Farias</span>
+        <span class="cert-hours">5 Horas</span>
+      </div>
+      <h3 class="cert-title">Testes Automáticos + Curso COMPLETO de Teste de Software</h3>
+      <div class="cert-meta">
+        <span>📅 23 de Fevereiro de 2025</span>
+        <span>👨‍🏫 Gustavo Farias (500.000+ Alunos)</span>
+      </div>
+      <div class="cert-code">Código: UC-c306281b-c2db-432a-ac42-ad4e873eccaf</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://ude.my/UC-c3062a1b-c2db-432a-ac42-ad4e873eccaf" target="_blank" rel="noopener">
+          Verificar Credencial Udemy ↗
+        </a>
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/UC-c3062a1b-c2db-432a-ac42-ad4e873eccaf.pdf" target="_blank" rel="noopener">
+          Visualizar PDF ↗
+        </a>
+      </div>
+    </article>
+
+    <!-- 03: Lógica de Programação para QA (LumeStack) -->
+    <article class="cert-card" data-category="automacao">
+      <div class="cert-top">
+        <span class="cert-issuer">LumeStack</span>
+        <span class="cert-hours">6 Horas</span>
+      </div>
+      <h3 class="cert-title">Lógica de Programação para QA</h3>
+      <div class="cert-meta">
+        <span>📅 18/02/2026</span>
+        <span>👨‍🏫 Henrique Manieri Claro</span>
+      </div>
+      <div class="cert-code">Código: qn4367jr-r7jbvswl-jxsrl7ta-10yat4pk</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/Certificado_Heverton_%20L%C3%B3gica%20de%20Programa%C3%A7%C3%A3o%20para%20QA.pdf" target="_blank" rel="noopener">
+          Visualizar Certificado (PDF) ↗
+        </a>
+      </div>
+    </article>
+
+    <!-- 04: Fundamentos Software Testing (LumeStack) -->
+    <article class="cert-card" data-category="qa-fundamentals">
+      <div class="cert-top">
+        <span class="cert-issuer">LumeStack</span>
+        <span class="cert-hours">3 Horas</span>
+      </div>
+      <h3 class="cert-title">Fundamentos de Software Testing</h3>
+      <div class="cert-meta">
+        <span>📅 17/02/2026</span>
+        <span>👨‍🏫 Henrique Manieri Claro</span>
+      </div>
+      <div class="cert-code">Código: 2xnkfz4o-da8icfvg-c98rdtjl-a4jnkocz</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/Certificado_Heverton_Fundamentos%20Software%20Testing.pdf" target="_blank" rel="noopener">
+          Visualizar Certificado (PDF) ↗
+        </a>
+      </div>
+    </article>
+
+    <!-- 05: Processos Ágeis (LumeStack) -->
+    <article class="cert-card" data-category="agil">
+      <div class="cert-top">
+        <span class="cert-issuer">LumeStack</span>
+        <span class="cert-hours">3 Horas</span>
+      </div>
+      <h3 class="cert-title">Processos Ágeis</h3>
+      <div class="cert-meta">
+        <span>📅 18/02/2026</span>
+        <span>👨‍🏫 Henrique Manieri Claro</span>
+      </div>
+      <div class="cert-code">Código: 2vz4agms-ok8jnlwx-3q1wlb0t-gj95wdyq</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/Certificado_Heverton_Processos%20%C3%81geis.pdf" target="_blank" rel="noopener">
+          Visualizar Certificado (PDF) ↗
+        </a>
+      </div>
+    </article>
+
+    <!-- 06: Fundamentos de Software e Web (LumeStack) -->
+    <article class="cert-card" data-category="qa-fundamentals">
+      <div class="cert-top">
+        <span class="cert-issuer">LumeStack</span>
+        <span class="cert-hours">1 Hora</span>
+      </div>
+      <h3 class="cert-title">Fundamentos de Software e Web</h3>
+      <div class="cert-meta">
+        <span>📅 17/02/2026</span>
+        <span>👨‍🏫 Henrique Manieri Claro</span>
+      </div>
+      <div class="cert-code">Código: c08y4bve-hdib90s2-0zrljm36-7pcmv46t</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/Certificado_Heverton_Fundamentos%20de%20Software%20e%20Web.pdf" target="_blank" rel="noopener">
+          Visualizar Certificado (PDF) ↗
+        </a>
+      </div>
+    </article>
+
+    <!-- 07: Introdução ao Mundo de QA (LumeStack) -->
+    <article class="cert-card" data-category="qa-fundamentals">
+      <div class="cert-top">
+        <span class="cert-issuer">LumeStack</span>
+        <span class="cert-hours">1 Hora</span>
+      </div>
+      <h3 class="cert-title">Introdução ao Mundo de QA</h3>
+      <div class="cert-meta">
+        <span>📅 17/02/2026</span>
+        <span>👨‍🏫 Henrique Manieri Claro</span>
+      </div>
+      <div class="cert-code">Código: ufeim6va-uhvgwmb0-eyvx4u0p-mf1vw356</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/Certificado_Heverton_Introdu%C3%A7%C3%A3o%20ao%20Mundo%20de%20QA.pdf" target="_blank" rel="noopener">
+          Visualizar Certificado (PDF) ↗
+        </a>
+      </div>
+    </article>
+
+    <!-- 08: Módulo Jira (LumeStack) -->
+    <article class="cert-card" data-category="agil">
+      <div class="cert-top">
+        <span class="cert-issuer">LumeStack</span>
+        <span class="cert-hours">1 Hora</span>
+      </div>
+      <h3 class="cert-title">Gestão de Demandas & Módulo Jira</h3>
+      <div class="cert-meta">
+        <span>📅 18/02/2026</span>
+        <span>👨‍🏫 Henrique Manieri Claro</span>
+      </div>
+      <div class="cert-code">Código: xda1pq4l-if9wj47s-kjat2i68-iez0ag3n</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/Certificado_Heverton_M%C3%B3dulo%20Jira.pdf" target="_blank" rel="noopener">
+          Visualizar Certificado (PDF) ↗
+        </a>
+      </div>
+    </article>
+
+    <!-- 09: LinkedIn Estratégico (LumeStack) -->
+    <article class="cert-card" data-category="agil">
+      <div class="cert-top">
+        <span class="cert-issuer">LumeStack</span>
+        <span class="cert-hours">1 Hora</span>
+      </div>
+      <h3 class="cert-title">Posicionamento Técnico & LinkedIn</h3>
+      <div class="cert-meta">
+        <span>📅 18/02/2026</span>
+        <span>👨‍🏫 Henrique Manieri Claro</span>
+      </div>
+      <div class="cert-code">Código: ln5wxjv9-62f7go0y-g56irflx-ws2pin5v</div>
+      <div class="cert-actions">
+        <a class="btn-cert" href="https://raw.githubusercontent.com/hevert0n/Certificates/main/Certificado_Heverton_%20Linkedin.pdf" target="_blank" rel="noopener">
+          Visualizar Certificado (PDF) ↗
+        </a>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- RODAPÉ -->
+  <footer id="contact">
+    <div class="contact-box">
+      <h3 style="font-size: 20px; color: #fff; margin-bottom: 8px;">Repositório Oficial de Certificados</h3>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+        Todos os arquivos em formato PDF e registros autenticados estão versionados no GitHub.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+        <a class="btn-cert" style="padding: 8px 16px; border: 1px solid var(--border-glass); border-radius: 6px;" href="https://github.com/hevert0n/Certificates" target="_blank" rel="noopener">
+          Abrir Repositório Certificates ↗
+        </a>
+        <a class="btn-cert" style="padding: 8px 16px; border: 1px solid var(--border-glass); border-radius: 6px;" href="index.html">
+          ← Voltar ao Portfólio
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© Heverton · QA Engineer & Quality Specialist</div>
+      <div>Designed with Cyberpunk Glass UI</div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  function filtrar(categoria) {
+    const botoes = document.querySelectorAll('.filter-btn');
+    botoes.forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    const cards = document.querySelectorAll('.cert-card');
+    cards.forEach(card => {
+      if (categoria === 'all' || card.getAttribute('data-category') === categoria) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
